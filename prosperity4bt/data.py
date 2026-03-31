@@ -6,7 +6,8 @@ from prosperity4bt.file_reader import FileReader
 
 # Prosperity 4 product position limits — populate as rounds are announced
 LIMITS: dict[str, int] = {
-    "TEST_PRODUCT": 20,  # Synthetic test product — remove when real products are added
+    "EMERALDS": 80,
+    "TOMATOES": 80,  # Synthetic test product — remove when real products are added
 }
 
 
@@ -61,13 +62,19 @@ class BacktestData:
 
 
 def create_backtest_data(
-    round_num: int, day_num: int, prices: list[PriceRow], trades: list[Trade], observations: list[ObservationRow]
+    round_num: int,
+    day_num: int,
+    prices: list[PriceRow],
+    trades: list[Trade],
+    observations: list[ObservationRow],
 ) -> BacktestData:
     prices_by_timestamp: dict[int, dict[Symbol, PriceRow]] = defaultdict(dict)
     for row in prices:
         prices_by_timestamp[row.timestamp][row.product] = row
 
-    trades_by_timestamp: dict[int, dict[Symbol, list[Trade]]] = defaultdict(lambda: defaultdict(list))
+    trades_by_timestamp: dict[int, dict[Symbol, list[Trade]]] = defaultdict(
+        lambda: defaultdict(list)
+    )
     for trade in trades:
         trades_by_timestamp[trade.timestamp][trade.symbol].append(trade)
 
@@ -88,15 +95,23 @@ def create_backtest_data(
 
 
 def has_day_data(file_reader: FileReader, round_num: int, day_num: int) -> bool:
-    with file_reader.file([f"round{round_num}", f"prices_round_{round_num}_day_{day_num}.csv"]) as file:
+    with file_reader.file(
+        [f"round{round_num}", f"prices_round_{round_num}_day_{day_num}.csv"]
+    ) as file:
         return file is not None
 
 
-def read_day_data(file_reader: FileReader, round_num: int, day_num: int, no_names: bool) -> BacktestData:
+def read_day_data(
+    file_reader: FileReader, round_num: int, day_num: int, no_names: bool
+) -> BacktestData:
     prices = []
-    with file_reader.file([f"round{round_num}", f"prices_round_{round_num}_day_{day_num}.csv"]) as file:
+    with file_reader.file(
+        [f"round{round_num}", f"prices_round_{round_num}_day_{day_num}.csv"]
+    ) as file:
         if file is None:
-            raise ValueError(f"Prices data is not available for round {round_num} day {day_num}")
+            raise ValueError(
+                f"Prices data is not available for round {round_num} day {day_num}"
+            )
 
         for line in file.read_text(encoding="utf-8").splitlines()[1:]:
             columns = line.split(";")
@@ -116,7 +131,9 @@ def read_day_data(file_reader: FileReader, round_num: int, day_num: int, no_name
             )
 
     trades = []
-    with file_reader.file([f"round{round_num}", f"trades_round_{round_num}_day_{day_num}.csv"]) as file:
+    with file_reader.file(
+        [f"round{round_num}", f"trades_round_{round_num}_day_{day_num}.csv"]
+    ) as file:
         if file is not None:
             for line in file.read_text(encoding="utf-8").splitlines()[1:]:
                 columns = line.split(";")
@@ -133,7 +150,9 @@ def read_day_data(file_reader: FileReader, round_num: int, day_num: int, no_name
                 )
 
     observations = []
-    with file_reader.file([f"round{round_num}", f"observations_round_{round_num}_day_{day_num}.csv"]) as file:
+    with file_reader.file(
+        [f"round{round_num}", f"observations_round_{round_num}_day_{day_num}.csv"]
+    ) as file:
         if file is not None:
             for line in file.read_text(encoding="utf-8").splitlines()[1:]:
                 columns = line.split(",")
