@@ -6,8 +6,8 @@ from prosperity4bt.file_reader import FileReader
 
 # Prosperity 4 product position limits — populate as rounds are announced
 LIMITS: dict[str, int] = {
-    "EMERALDS": 80,
-    "TOMATOES": 80,  # Synthetic test product — remove when real products are added
+    "INTARIAN_PEPPER_ROOT": 80,
+    "ASH_COATED_OSMIUM": 80,  # Synthetic test product — remove when real products are added
 }
 
 
